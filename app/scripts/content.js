@@ -10,7 +10,8 @@ window.onload = function () {
    * スクリプト処理
    */
   function insertUI() {
-    let htmlStr = `<div id="app-workload"><div style="display: flex;width: calc(578px + 56px + (100% - 1049px)*0.16666667);padding: 8px 0;flex: 1 1 auto;margin-left: 60px;align-items: center;justify-content: start;">
+    let htmlStr = `
+    <div id="app-workload"><div style="display: flex;width: calc(578px + 56px + (100% - 1049px)*0.16666667);padding: 8px 0;flex: 1 1 auto;margin-left: 60px;align-items: center;justify-content: start;">
   <select id="select-project" placeholder="選んでね！" style="flex-grow: 1;margin: 0px 5px;">
     <option disabled="" selected="" placeholder="">プロジェクト選択</option>
     <option value="1">〇〇案件</option>
@@ -30,7 +31,8 @@ window.onload = function () {
     <option value="2">☓☓修正</option>
     <option value="3">▲▲のスケジュール整理</option>
     <option value="4">リファクタリング</option>
-  </select></div></div>`;
+  </select></div></div>
+  `;
     const parser = new DOMParser();
     const selectHtmlDom = parser.parseFromString(htmlStr, "text/html");
     const domEl = selectHtmlDom.body.childNodes[0];
@@ -44,21 +46,38 @@ window.onload = function () {
           domEl
         );
     }
+    if (
+      document.querySelector("[aria-label='タイトルを追加']") &&
+      !document.querySelector("#app-workload")
+    ) {
+      document
+        .querySelector("[aria-label='タイトルを追加']")
+        .parentElement.parentElement.parentElement.parentElement.after(domEl);
+    }
   }
 
   $("head").append(
     $('<link rel="stylesheet" type="text/css" />').attr(
       "href",
-      chrome.runtime.getURL(
-        "lib/bootstrap-material-design/dist/css/bootstrap-material-design.min.css"
-      )
+      chrome.runtime.getURL("lib/select2-materialize/select2.min.css")
     )
   );
-
   $("head").append(
     $('<link rel="stylesheet" type="text/css" />').attr(
       "href",
-      chrome.runtime.getURL("lib/select2-materialize/select2-materialize.css")
+      chrome.runtime.getURL("styles/style.css")
+    )
+  );
+  $("body").append(
+    $("<script />").attr(
+      "src",
+      chrome.runtime.getURL("lib/jquery/dist/jquery.min.js")
+    )
+  );
+  $("body").append(
+    $("<script />").attr(
+      "src",
+      chrome.runtime.getURL("lib/select2-materialize/select2.min.js")
     )
   );
 
@@ -68,10 +87,31 @@ window.onload = function () {
       console.log("Before:", href);
       console.log("After:", location.href);
       href = location.href;
-      insertUI();
+      if (!document.querySelector("#app-workload")) {
+        insertUI();
+        $("#select-project").select2();
+        $("#select-phase").select2();
+        $("#select-task").select2();
+      }
     }
+  });
+
+  window.addEventListener("click", function () {
+    console.log("click!");
+    this.setTimeout(function () {
+      if (!document.querySelector("#app-workload")) {
+        console.log("click! #app-workload insert");
+        insertUI();
+        // $("#select-project").select2();
+        // $("#select-phase").select2();
+        // $("#select-task").select2();
+      }
+    }, 500);
   });
 
   observer.observe(document, { childList: true, subtree: true });
   insertUI();
+  $("#select-project").select2();
+  $("#select-phase").select2();
+  $("#select-task").select2();
 };
