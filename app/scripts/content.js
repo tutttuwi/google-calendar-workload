@@ -10,29 +10,37 @@ window.onload = function () {
    * スクリプト処理
    */
   function insertUI() {
-    let htmlStr = `
-    <div id="app-workload"><div style="display: flex;width: calc(578px + 56px + (100% - 1049px)*0.16666667);padding: 8px 0;flex: 1 1 auto;margin-left: 60px;align-items: center;justify-content: start;">
-  <select id="select-project" placeholder="選んでね！" style="flex-grow: 1;margin: 0px 5px;">
-    <option disabled="" selected="" placeholder="">プロジェクト選択</option>
-    <option value="1">〇〇案件</option>
-    <option value="2">☓☓対応</option>
-    <option value="3">▲▲改善</option>
-  </select>
-  <select id="select-phase" placeholder="選んでね！" style="flex-grow: 1;margin: 0px 5px;">
-    <option disabled="" selected="" placeholder="">フェーズ選択</option>
-    <option value="1">要件定義</option>
-    <option value="2">調査</option>
-    <option value="3">基本設計</option>
-    <option value="4">製造</option>
-  </select>
-  <select id="select-task" placeholder="選んでね！" style="flex-grow: 1;margin: 0px 5px;">
-    <option disabled="" selected="" placeholder="">タスク選択</option>
-    <option value="1">○○機能追加</option>
-    <option value="2">☓☓修正</option>
-    <option value="3">▲▲のスケジュール整理</option>
-    <option value="4">リファクタリング</option>
-  </select></div></div>
-  `;
+    let htmlStr;
+    if (document.querySelector("[aria-label='タイトル']")) {
+      htmlStr = `
+      <div id="app-workload"><div style="display: flex;width: calc(578px + 56px + (100% - 1049px)*0.16666667);padding: 8px 0;flex: 1 1 auto;margin-left: 60px;align-items: center;justify-content: start;">
+    <select id="select-project" placeholder="選んでね！" style="flex-grow: 1;margin: 0px 5px;">
+      <option disabled="" selected="" placeholder="">プロジェクト選択</option>
+    </select>
+    <select id="select-phase" placeholder="選んでね！" style="flex-grow: 1;margin: 0px 5px;">
+      <option disabled="" selected="" placeholder="">フェーズ選択</option>
+    </select>
+    <select id="select-task" placeholder="選んでね！" style="flex-grow: 1;margin: 0px 5px;">
+      <option disabled="" selected="" placeholder="">タスク選択</option>
+    </select></div></div>
+    `;
+    } else if (document.querySelector("[aria-label='タイトルを追加']")) {
+      htmlStr = `
+      <div id="app-workload"><div style="display: flex;width: calc(578px + 56px + (100% - 1049px)*0.16666667);padding: 8px 0;flex: 1 1 auto;align-items: center;justify-content: start;">
+    <select id="select-project" placeholder="選んでね！" style="flex-grow: 1;margin: 0px 5px;">
+      <option disabled="" selected="" placeholder="">プロジェクト選択</option>
+    </select>
+    <select id="select-phase" placeholder="選んでね！" style="flex-grow: 1;margin: 0px 5px;">
+      <option disabled="" selected="" placeholder="">フェーズ選択</option>
+    </select>
+    <select id="select-task" placeholder="選んでね！" style="flex-grow: 1;margin: 0px 5px;">
+      <option disabled="" selected="" placeholder="">タスク選択</option>
+    </select></div></div>
+    `;
+    } else {
+      return;
+    }
+
     const parser = new DOMParser();
     const selectHtmlDom = parser.parseFromString(htmlStr, "text/html");
     const domEl = selectHtmlDom.body.childNodes[0];
@@ -88,10 +96,7 @@ window.onload = function () {
       console.log("After:", location.href);
       href = location.href;
       if (!document.querySelector("#app-workload")) {
-        insertUI();
-        $("#select-project").select2();
-        $("#select-phase").select2();
-        $("#select-task").select2();
+        setUI();
       }
     }
   });
@@ -101,17 +106,75 @@ window.onload = function () {
     this.setTimeout(function () {
       if (!document.querySelector("#app-workload")) {
         console.log("click! #app-workload insert");
-        insertUI();
-        // $("#select-project").select2();
-        // $("#select-phase").select2();
-        // $("#select-task").select2();
+        setUI();
       }
     }, 500);
   });
 
+  function changeSelect(e) {
+    let idx = e.target.selectedIndex;
+    let selectText = e.target.options[idx].text;
+    console.log(selectText);
+    if (document.querySelector("[aria-label='タイトル']")) {
+      let curVal = document.querySelector("[aria-label='タイトル']").value;
+      let titleAry = curVal.split(":");
+      let prj = titleAry.shift();
+      let phs = titleAry.shift();
+      let tsk = titleAry.shift();
+      let txt = titleAry.join(":");
+      if (e.target.id == "select-project") {
+        prj = selectText;
+      } else if (e.target.id == "select-phase") {
+        phs = selectText;
+      } else if (e.target.id == "select-task") {
+        tsk = selectText;
+      }
+      document.querySelector("[aria-label='タイトル']").value = [
+        prj,
+        phs,
+        tsk,
+        txt,
+      ].join(":");
+    } else if (document.querySelector("[aria-label='タイトルを追加']")) {
+    }
+  }
+  function setUI() {
+    insertUI();
+    $("#select-project")
+      .select2({
+        dropdownParent: $("#app-workload"),
+        data: [
+          { id: 10, text: "○○案件対応のユーザビリティ向上対応、幅のテスト" },
+          { id: 11, text: "▲▲案件対応" },
+          { id: 12, text: "■■案件対応" },
+        ],
+      })
+      .on("change", changeSelect(e));
+    $("#select-phase")
+      .select2({
+        dropdownParent: $("#app-workload"),
+        data: [
+          { id: 10, text: "要件定義、幅のテストように文字列を長くする" },
+          { id: 11, text: "基本設計" },
+          { id: 12, text: "コーディング" },
+        ],
+      })
+      .on("change", changeSelect(e));
+    $("#select-task")
+      .select2({
+        dropdownParent: $("#app-workload"),
+        data: [
+          {
+            id: 10,
+            text: "調査、幅のテストように文字列を長くする、幅のテストように文字列を長くする",
+          },
+          { id: 11, text: "会議" },
+          { id: "xx", text: "障害対応" },
+        ],
+      })
+      .on("change", changeSelect(e));
+  }
+
   observer.observe(document, { childList: true, subtree: true });
-  insertUI();
-  $("#select-project").select2();
-  $("#select-phase").select2();
-  $("#select-task").select2();
+  setUI();
 };
