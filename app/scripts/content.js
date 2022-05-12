@@ -112,31 +112,32 @@ window.onload = function () {
   });
 
   function changeSelect(e) {
+    console.log("change select!");
     let idx = e.target.selectedIndex;
     let selectText = e.target.options[idx].text;
     console.log(selectText);
-    if (document.querySelector("[aria-label='タイトル']")) {
-      let curVal = document.querySelector("[aria-label='タイトル']").value;
-      let titleAry = curVal.split(":");
-      let prj = titleAry.shift();
-      let phs = titleAry.shift();
-      let tsk = titleAry.shift();
-      let txt = titleAry.join(":");
-      if (e.target.id == "select-project") {
-        prj = selectText;
-      } else if (e.target.id == "select-phase") {
-        phs = selectText;
-      } else if (e.target.id == "select-task") {
-        tsk = selectText;
-      }
-      document.querySelector("[aria-label='タイトル']").value = [
-        prj,
-        phs,
-        tsk,
-        txt,
-      ].join(":");
-    } else if (document.querySelector("[aria-label='タイトルを追加']")) {
+    let screenText;
+    const detailCalendarText = "[aria-label='タイトル']";
+    const popupCalendarText = "[aria-label='タイトルを追加']";
+    if (document.querySelector(detailCalendarText)) {
+      screenText = detailCalendarText;
+    } else if (document.querySelector(popupCalendarText)) {
+      screenText = popupCalendarText;
     }
+    let curVal = document.querySelector(screenText).value;
+    let titleAry = curVal.split(":");
+    let prj = titleAry.shift();
+    let phs = titleAry.shift();
+    let tsk = titleAry.shift();
+    let txt = titleAry.join(":");
+    if (e.target.id == "select-project") {
+      prj = selectText;
+    } else if (e.target.id == "select-phase") {
+      phs = selectText;
+    } else if (e.target.id == "select-task") {
+      tsk = selectText;
+    }
+    document.querySelector(screenText).value = [prj, phs, tsk, txt].join(":");
   }
   function setUI() {
     insertUI();
@@ -149,7 +150,7 @@ window.onload = function () {
           { id: 12, text: "■■案件対応" },
         ],
       })
-      .on("change", changeSelect(e));
+      .on("select2:select", changeSelect);
     $("#select-phase")
       .select2({
         dropdownParent: $("#app-workload"),
@@ -159,7 +160,7 @@ window.onload = function () {
           { id: 12, text: "コーディング" },
         ],
       })
-      .on("change", changeSelect(e));
+      .on("select2:select", changeSelect);
     $("#select-task")
       .select2({
         dropdownParent: $("#app-workload"),
@@ -172,7 +173,7 @@ window.onload = function () {
           { id: "xx", text: "障害対応" },
         ],
       })
-      .on("change", changeSelect(e));
+      .on("select2:select", changeSelect);
   }
 
   observer.observe(document, { childList: true, subtree: true });
