@@ -9,7 +9,7 @@
     "16": "images/icon-16.png",
     "128": "images/icon-128.png"
   },
-  "web_accessible_resources": ["lib/*"],
+  "web_accessible_resources": ["lib/*", "scripts/workload.js"],
   "background": {
     "scripts": ["scripts/background.js"]
   },
