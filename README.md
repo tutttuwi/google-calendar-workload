@@ -71,6 +71,9 @@ if(process.env.NODE_ENV === 'development'){
 
 
 
+## Misc
 
+- use spread sheet with this app.
+<https://docs.google.com/spreadsheets/d/1ukPRfqQ43maXBSbX1gpRZD3kAFFsmlD-Qk3gAJZQR-w/edit#gid=922271400>
 
 
