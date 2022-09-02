@@ -19,11 +19,11 @@ function setSelect() {
     screenText = popupCalendarText;
   }
   let curVal = document.querySelector(screenText).value;
-  let titleAry = curVal.split(":");
+  let titleAry = curVal.split("|");
   let prj = titleAry.shift();
   let phs = titleAry.shift();
   let tsk = titleAry.shift();
-  let txt = titleAry.join(":");
+  let txt = titleAry.join("|");
   document.querySelector("#select-project").value;
 }
 function insertUI() {
@@ -117,79 +117,82 @@ function changeSelect(e) {
   let screenText;
   const detailCalendarText = "[aria-label='タイトル']";
   const popupCalendarText = "[aria-label='タイトルを追加']";
-  let len = document.querySelectorAll("[role=textbox]").length;
-  if (len < 1) {
-    console.log("説明欄が見つからないため処理を終了します。");
-    return;
-  }
-  // 最後の要素が説明欄と判断
-  let curText = document.querySelectorAll("[role=textbox]")[len - 1].innerText;
-  if (!curText || curText == "\n") {
-    alert(
-      "説明欄が空のため選択できません。何か記載してから再度選択してください。"
-    );
-    return;
-  }
-  const TAG_TEXT = "[google-calendar-workload-tag]";
-  console.log("curText.includes(TAG_TEXT)");
-  console.log(curText.includes(TAG_TEXT));
-  if (!curText.includes(TAG_TEXT)) {
-    console.log("-----tag no exists-----");
-    curText = [TAG_TEXT, "prj", "phs", "tsk"].join(":") + curText;
-  }
-  let lineAry = curText.split("\n");
-  for (let i = 0; i < lineAry.length; i++) {
-    let line = lineAry[i];
-    console.log("-----line-----");
-    console.log(line);
-    if (line.includes(TAG_TEXT)) {
-      console.log("-----include tag text-----");
-      console.log(line);
-      let tagAry = line.split(":");
-      let tagText = tagAry.shift();
-      let prj = tagAry.shift();
-      let phs = tagAry.shift();
-      let tsk = tagAry.shift();
-      console.log("e.target.id");
-      console.log(e.target.id);
-      if (e.target.id == "select-project") {
-        prj = selectText;
-      } else if (e.target.id == "select-phase") {
-        phs = selectText;
-      } else if (e.target.id == "select-task") {
-        tsk = selectText;
-      }
-      lineAry[i] = [tagText, prj, phs, tsk].join(":");
-      console.log(lineAry[i]);
-      break;
-    }
-  }
-  curText = lineAry.join("\n");
-  // 概要欄更新
-  console.log("概要欄更新");
-  console.log(document.querySelectorAll("[role=textbox]")[len - 1].innerText);
-  console.log(curText);
-  document.querySelectorAll("[role=textbox]")[len - 1].innerText = curText;
 
-  // if (document.querySelector(detailCalendarText)) {
-  //   screenText = detailCalendarText;
-  // } else if (document.querySelector(popupCalendarText)) {
-  //   screenText = popupCalendarText;
+  // 概要欄設定
+  // let len = document.querySelectorAll("[role=textbox]").length;
+  // if (len < 1) {
+  //   console.log("説明欄が見つからないため処理を終了します。");
+  //   return;
   // }
-  // let curVal = document.querySelector(screenText).value;
-  // let titleAry = curVal.split(":");
-  // let prj = titleAry.shift();
-  // let phs = titleAry.shift();
-  // let tsk = titleAry.shift();
-  // let txt = titleAry.join(":");
-  // if (e.target.id == "select-project") {
-  //   prj = selectText;
-  // } else if (e.target.id == "select-phase") {
-  //   phs = selectText;
-  // } else if (e.target.id == "select-task") {
-  //   tsk = selectText;
+  // // 最後の要素が説明欄と判断
+  // let curText = document.querySelectorAll("[role=textbox]")[len - 1].innerText;
+  // if (!curText || curText == "\n") {
+  //   alert(
+  //     "説明欄が空のため選択できません。何か記載してから再度選択してください。"
+  //   );
+  //   return;
   // }
-  // document.querySelector(screenText).value = [prj, phs, tsk, txt].join(":");
+  // const TAG_TEXT = "[google-calendar-workload-tag]";
+  // console.log("curText.includes(TAG_TEXT)");
+  // console.log(curText.includes(TAG_TEXT));
+  // if (!curText.includes(TAG_TEXT)) {
+  //   console.log("-----tag no exists-----");
+  //   curText = [TAG_TEXT, "prj", "phs", "tsk"].join("|") + curText;
+  // }
+  // let lineAry = curText.split("\n");
+  // for (let i = 0; i < lineAry.length; i++) {
+  //   let line = lineAry[i];
+  //   console.log("-----line-----");
+  //   console.log(line);
+  //   if (line.includes(TAG_TEXT)) {
+  //     console.log("-----include tag text-----");
+  //     console.log(line);
+  //     let tagAry = line.split("|");
+  //     let tagText = tagAry.shift();
+  //     let prj = tagAry.shift();
+  //     let phs = tagAry.shift();
+  //     let tsk = tagAry.shift();
+  //     console.log("e.target.id");
+  //     console.log(e.target.id);
+  //     if (e.target.id == "select-project") {
+  //       prj = selectText;
+  //     } else if (e.target.id == "select-phase") {
+  //       phs = selectText;
+  //     } else if (e.target.id == "select-task") {
+  //       tsk = selectText;
+  //     }
+  //     lineAry[i] = [tagText, prj, phs, tsk].join("|");
+  //     console.log(lineAry[i]);
+  //     break;
+  //   }
+  // }
+  // curText = lineAry.join("\n");
+  // // 概要欄更新
+  // console.log("概要欄更新");
+  // console.log(document.querySelectorAll("[role=textbox]")[len - 1].innerText);
+  // console.log(curText);
+  // document.querySelectorAll("[role=textbox]")[len - 1].innerText = curText;
+
+  // タイトル設定
+  if (document.querySelector(detailCalendarText)) {
+    screenText = detailCalendarText;
+  } else if (document.querySelector(popupCalendarText)) {
+    screenText = popupCalendarText;
+  }
+  let curVal = document.querySelector(screenText).value;
+  let titleAry = curVal.split("|");
+  let prj = titleAry.shift();
+  let phs = titleAry.shift();
+  let tsk = titleAry.shift();
+  let txt = titleAry.join("|");
+  if (e.target.id == "select-project") {
+    prj = selectText;
+  } else if (e.target.id == "select-phase") {
+    phs = selectText;
+  } else if (e.target.id == "select-task") {
+    tsk = selectText;
+  }
+  document.querySelector(screenText).value = [prj, phs, tsk, txt].join("|");
 }
 
 function defaultSelect(selElStr, tarText) {
@@ -220,11 +223,11 @@ function setUI() {
   // let curVal, prj, phs, tsk, txt;
   // if (screenText) {
   //   curVal = document.querySelector(screenText).value;
-  //   let titleAry = curVal.split(":");
+  //   let titleAry = curVal.split("|");
   //   prj = titleAry.shift();
   //   phs = titleAry.shift();
   //   tsk = titleAry.shift();
-  //   txt = titleAry.join(":");
+  //   txt = titleAry.join("|");
   // }
 
   $("#select-project")
