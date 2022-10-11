@@ -230,29 +230,30 @@ function setUI() {
   //   txt = titleAry.join("|");
   // }
 
-  $("#select-project")
-    .select2({
-      dropdownParent: $("#app-workload"),
-      data: selectProjectData,
-    })
-    .on("select2:select", changeSelect);
-
-  $("#select-phase")
-    .select2({
-      dropdownParent: $("#app-workload"),
-      data: selectPhaseData,
-    })
-    .on("select2:select", changeSelect);
-  $("#select-task")
-    .select2({
-      dropdownParent: $("#app-workload"),
-      data: selectTaskData,
-    })
-    .on("select2:select", changeSelect);
   // TODO: StorageAreaから取得、シートIDがなければAPIコールしない
   localStorage.setItem("sheetId", "test");
   let sheetId = localStorage.getItem("sheetId");
-  fetchSelectData(sheetId);
+  fetchSelectData(sheetId, function () {
+    $("#select-project")
+      .select2({
+        dropdownParent: $("#app-workload"),
+        data: selectProjectData,
+      })
+      .on("select2:select", changeSelect);
+
+    $("#select-phase")
+      .select2({
+        dropdownParent: $("#app-workload"),
+        data: selectPhaseData,
+      })
+      .on("select2:select", changeSelect);
+    $("#select-task")
+      .select2({
+        dropdownParent: $("#app-workload"),
+        data: selectTaskData,
+      })
+      .on("select2:select", changeSelect);
+  });
 }
 
 const WORKLOAD_URL =
@@ -313,18 +314,25 @@ function adjustSelectData(data) {
   });
   return ret;
 }
-function fetchSelectData(sheetId) {
-  sheetId = "";
-  console.log("fetchSelectData : CALLED");
-  doGet({ select: "project", sheetId: sheetId }, function (data) {
-    selectProjectData = adjustSelectData(data);
-  });
-  doGet({ select: "phase", sheetId: sheetId }, function (data) {
-    selectPhaseData = adjustSelectData(data);
-  });
-  doGet({ select: "task", sheetId: sheetId }, function (data) {
-    selectTaskData = adjustSelectData(data);
-  });
+function fetchSelectData(sheetId, callback) {
+  if (isFetchedData()) return callback();
+
+  try {
+    sheetId = "";
+    console.log("fetchSelectData : CALLED");
+    doGet({ select: "project", sheetId: sheetId }, function (data) {
+      selectProjectData = adjustSelectData(data);
+    });
+    doGet({ select: "phase", sheetId: sheetId }, function (data) {
+      selectPhaseData = adjustSelectData(data);
+    });
+    doGet({ select: "task", sheetId: sheetId }, function (data) {
+      selectTaskData = adjustSelectData(data);
+    });
+    callback();
+  } catch (error) {
+    console.log(error);
+  }
 }
 function isFetchedData() {
   return selectProjectData && selectPhaseData && selectTaskData;
