@@ -339,5 +339,5 @@ function isFetchedData() {
 }
 
 // ページ読み込み時実行
-observer.observe(document, { childList: true, subtree: true });
+// observer.observe(document, { childList: true, subtree: true });
 setUI();
